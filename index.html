@@ -518,8 +518,8 @@ body { font-family: "DM Sans", sans-serif; background: var(--white); color: var(
   <div class="hero-inner">
     <div>
       <div class="hero-badge"><div class="badge-dot"></div><span>Est. 2020 &nbsp;·&nbsp; Kuala Lumpur</span></div>
-      <h1 class="hero-headline">Spotless<br>Spaces.<br><em>Zero</em><br>Compromise.</h1>
-      <p class="hero-sub">Professional cleaning services in Kuala Lumpur for homes, renovations, and events. Trusted by hundreds of satisfied clients.</p>
+      <h1 class="hero-headline" id="cms-headline">Spotless<br>Spaces.<br><em>Zero</em><br>Compromise.</h1>
+      <p class="hero-sub" id="cms-subtext">Professional cleaning services in Kuala Lumpur for homes, renovations, and events. Trusted by hundreds of satisfied clients.</p>
       <div class="hero-ctas">
         <a href="#contact" class="btn-primary"><span>Get a Free Quote</span></a>
         <a href="#services" class="btn-outline">View Services</a>
@@ -739,8 +739,8 @@ body { font-family: "DM Sans", sans-serif; background: var(--white); color: var(
     <h2 class="cta-headline">Ready for a Spotless Space?</h2>
     <p class="cta-sub">Book trusted cleaning professionals today. Fast response, fair pricing, guaranteed results — serving all of Kuala Lumpur.</p>
     <div class="cta-btns">
-      <a href="https://wa.me/60123456789?text=Hi%20Sirius%2C%20I%20would%20like%20a%20cleaning%20quote" class="btn-white">📱 WhatsApp Us</a>
-      <a href="tel:+60123456789" class="btn-ghost">📞 Call Now</a>
+      <a href="https://wa.me/60123456789?text=Hi%20Sirius%2C%20I%20would%20like%20a%20cleaning%20quote" class="btn-white" id="cms-whatsapp-btn">📱 WhatsApp Us</a>
+      <a href="tel:+60123456789" class="btn-ghost" id="cms-phone-btn">📞 Call Now</a>
     </div>
     <div class="cta-promise">
       <div class="cta-promise-item"><div class="cn">Fast</div><div class="cl">Response</div></div>
@@ -786,8 +786,8 @@ body { font-family: "DM Sans", sans-serif; background: var(--white); color: var(
       <h5>Contact</h5>
       <ul class="footer-contact-list">
         <li><span>📍</span><span>Kuala Lumpur, Malaysia</span></li>
-        <li><span>📞</span><span>+60 12-345 6789</span></li>
-        <li><span>📧</span><span>hello@siriuscleaning.my</span></li>
+        <li><span>📞</span><span id="cms-phone">+60 12-345 6789</span></li>
+        <li><span>📧</span><span id="cms-email">hello@siriuscleaning.my</span></li>
         <li><span>📸</span><span>@siriuscleaningkl</span></li>
       </ul>
     </div>
@@ -799,7 +799,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--white); color: var(
 </footer>
 
 <div class="sticky-mobile-cta">
-  <a href="https://wa.me/60123456789">📱 Get a Free Quote — WhatsApp Us</a>
+  <a href="https://wa.me/60123456789" id="cms-mobile-whatsapp">📱 Get a Free Quote — WhatsApp Us</a>
 </div>
 
 <script>
@@ -825,15 +825,65 @@ window.addEventListener("scroll", () => {
 });
 </script>
 <script>
-  if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", user => {
-      if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
-        });
-      }
-    });
-  }
+// ── Netlify Identity redirect ──────────────────────────────
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", function(user) {
+    if (!user) {
+      window.netlifyIdentity.on("login", function() {
+        document.location.href = "/admin/";
+      });
+    }
+  });
+}
+
+// ── Load content from content.json and update the page ────
+fetch("/content.json")
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+
+    // Hero headline
+    if (data.headline) {
+      var h = document.getElementById("cms-headline");
+      if (h) h.innerHTML = data.headline;
+    }
+
+    // Hero subtext
+    if (data.subtext) {
+      var s = document.getElementById("cms-subtext");
+      if (s) s.textContent = data.subtext;
+    }
+
+    // Footer phone
+    if (data.phone) {
+      var p = document.getElementById("cms-phone");
+      if (p) p.textContent = data.phone;
+    }
+
+    // Footer email
+    if (data.email) {
+      var e = document.getElementById("cms-email");
+      if (e) e.textContent = data.email;
+    }
+
+    // WhatsApp CTA button href
+    if (data.whatsapp) {
+      var wa = document.getElementById("cms-whatsapp-btn");
+      if (wa) wa.href = "https://wa.me/" + data.whatsapp + "?text=Hi%20Sirius%2C%20I%20would%20like%20a%20cleaning%20quote";
+      var mwa = document.getElementById("cms-mobile-whatsapp");
+      if (mwa) mwa.href = "https://wa.me/" + data.whatsapp;
+    }
+
+    // Phone call button href
+    if (data.phone) {
+      var ph = document.getElementById("cms-phone-btn");
+      if (ph) ph.href = "tel:" + data.phone.replace(/\s+/g, "");
+    }
+
+  })
+  .catch(function(err) {
+    // content.json not found yet — page shows default values, no crash
+    console.log("content.json not loaded:", err);
+  });
 </script>
 </body>
 </html>

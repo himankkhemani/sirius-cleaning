@@ -486,6 +486,7 @@ body { font-family: "DM Sans", sans-serif; background: var(--white); color: var(
   .strip-inner { flex-direction: column; align-items: flex-start; }
 }
 </style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
 
@@ -822,6 +823,17 @@ window.addEventListener("scroll", () => {
     ? "0 2px 24px rgba(18,58,102,0.14)"
     : "0 1px 0 rgba(30,91,158,0.12), 0 4px 20px rgba(18,58,102,0.06)";
 });
+</script>
+<script>
+  if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+      if (!user) {
+        window.netlifyIdentity.on("login", () => {
+          document.location.href = "/admin/";
+        });
+      }
+    });
+  }
 </script>
 </body>
 </html>
